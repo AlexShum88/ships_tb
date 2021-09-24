@@ -1,5 +1,6 @@
 package com.shum.ships_tb.service.ship;
 
+import com.shum.ships_tb.gameObj.Ship;
 import com.shum.ships_tb.repository.ShipRepository;
 import com.shum.ships_tb.repository.entity.RepoShip;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,10 @@ public class ShipImpl implements IShip{
             }
         }
         return rp.get(0);
+    }
+
+    @Override
+    public void save(Ship ship) {
+        shipRepository.save(ship.getRsh());
     }
 }

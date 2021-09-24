@@ -3,6 +3,7 @@ package com.shum.ships_tb.gameObj;
 import com.shum.ships_tb.ShipsBot;
 import com.shum.ships_tb.gameObj.interfaces.CanHaveCargo;
 import com.shum.ships_tb.gameObj.interfaces.CanMove;
+import com.shum.ships_tb.gameObj.interfaces.CanStringCargoTransformation;
 import com.shum.ships_tb.repository.entity.RepoCargo;
 import com.shum.ships_tb.repository.entity.RepoShip;
 import lombok.Data;
@@ -16,28 +17,23 @@ import java.util.Objects;
 * */
 
 @Data
-public class Ship implements CanMove, CanHaveCargo {
+public class Ship implements CanMove, CanHaveCargo, CanStringCargoTransformation {
     //ship fields from db
     private RepoShip rsh;
     //collection of cargos for this ship
-    private List<Cargo> cargo = new ArrayList<>();
+    private List<Cargo>cargo = new ArrayList<>();
 
     public Ship(RepoShip rp) { //refactoring needed
 
         rsh = rp;
 
-        turnStringIntoCargo(rsh.getCargo_map(), ", ", ":");
+        turnStringIntoCargo(rsh.getCargo_map(), extraRegex, introRegex, cargo);
     }
 
 
     @Override
-    public void setCargo() {
-
-    }
-
-    @Override
-    public void removeCargo() {
-
+    public List<Cargo> getCargo() {
+        return cargo;
     }
 
     @Override
@@ -56,27 +52,8 @@ public class Ship implements CanMove, CanHaveCargo {
 
     }
 
-    private RepoCargo getCargoData(String cargoName) {
-        /*support method to turnStringIntoCargo.
-         take name of cargo and get info about cargo from db*/
-        for (RepoCargo rp : ShipsBot.listCargo) {
-            if (Objects.equals(cargoName, rp.getName())) return rp;
-        }
-        return null;
+    public RepoShip getRsh() {
+        rsh.setCargo_map(this.turnCargoIntoString(cargo, extraRegex, introRegex));
+        return rsh;
     }
-
-    private void turnStringIntoCargo(String fromdb, String extraRegex, String introRegex) {
-        /*get string from RepoShip cargo_map and convert it to cargo obj
-        * to cargo list
-        * regex needed to split string to array of cargos*/
-        String[] first = fromdb.split(extraRegex);
-        for (int i = 0; i < first.length; i++) {
-            String[] second = first[i].split(introRegex);
-            RepoCargo rsh = Objects.requireNonNull(getCargoData(second[0]));
-            int count = Integer.parseInt(second[1]);
-            cargo.add(new Cargo(rsh, count));
-        }
-
-    }
-
 }

@@ -1,10 +1,13 @@
 package com.shum.ships_tb;
 
 
+
 import com.shum.ships_tb.gameObj.Ship;
 import com.shum.ships_tb.repository.entity.RepoCargo;
+import com.shum.ships_tb.repository.entity.RepoPort;
 import com.shum.ships_tb.service.BotService;
 import com.shum.ships_tb.service.cargo.ICargo;
+import com.shum.ships_tb.service.port.IPort;
 import com.shum.ships_tb.service.ship.IShip;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,14 +24,19 @@ public class ShipsBot extends TelegramLongPollingBot {
     private final BotService botService;
     private final ICargo icargo;
     private IShip iShip;
-    public static List<RepoCargo> listCargo;
+    private final IPort iPort;
+    //collections need that no ask db every time we need this template
+    public static List<RepoCargo> listCargo; //collections of cargos
+    public static List<RepoPort> listRepoPort; // collections of ports
 
     @Autowired
-    public ShipsBot(BotService botService, ICargo icargo, IShip iShip) {
+    public ShipsBot(BotService botService, ICargo icargo, IShip iShip, IPort iPort) {
         this.botService = botService;
         this.icargo = icargo;
         this.iShip = iShip;
+        this.iPort = iPort;
         listCargo = icargo.findAll();
+        listRepoPort = iPort.findAll();
     }
 
 
@@ -54,20 +62,9 @@ public class ShipsBot extends TelegramLongPollingBot {
             sm.setChatId(chatId);
             sm.setText(message);
 
-            //test block
-            System.out.println(ShipsBot.listCargo.get(0).getName());
-            Ship ship = new Ship(iShip.findById(1, iShip.findByOwner("me")));
-
-            for (int i = 0; i <ship.getCargo().size() ; i++) {
-                sm.setChatId(chatId);
-                sm.setText(ship.getCargo().get(i).getName());
-                try {
-                    execute(sm);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-            //end of test block
+            //second test block
+            testShipCargoOperations(chatId);
+            //end second test block
 
 
 
@@ -78,5 +75,32 @@ public class ShipsBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
+    }
+    private void testSendMessageWithShipsCargo(String chatId) {
+        SendMessage sm = new SendMessage();
+        //test block
+        System.out.println(ShipsBot.listCargo.get(0).getName());
+        Ship ship = new Ship(iShip.findById(1, iShip.findByOwner("me")));
+
+        for (int i = 0; i <ship.getCargo().size() ; i++) {
+            sm.setChatId(chatId);
+            sm.setText(ship.getCargo().get(i).getName());
+            try {
+                execute(sm);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void testShipCargoOperations(String chatId) {
+        SendMessage sm = new SendMessage();
+        Ship ship = new Ship(iShip.findById(1, iShip.findByOwner("me")));
+        ship.setCargo("pinapple", 5);
+        ship.setCargo("shit", 2);
+        ship.removePieceOfCargo("screw", 31);
+        //ship.removeCargo("apple");
+        iShip.save(ship);
+        testSendMessageWithShipsCargo(chatId);
     }
 }
