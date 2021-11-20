@@ -11,8 +11,8 @@ public class StartITC extends InlineTelegramCommand implements SetTextInlineTele
 
     @Override
     public void execute(String chatId) {
-        var kb = keyboardDirector.productor("/new_ship", "/enter_name");
-        messager.sentMessage(chatId, "hello", kb);
+        var kb = keyboardDirector.productor("/create_new_ship","/show_my_ships");
+        messager.sentMessage(chatId, "hello", kb);//todo there info about player
     }
 
     @Override

@@ -37,4 +37,13 @@ public class ShipImpl implements IShip{
     public void save(Ship ship) {
         shipRepository.save(ship.getRsh());
     }
+
+    @Override
+    public RepoShip findByNameInOwner(String shName, String owner) {
+        var ships =this.findByOwner(owner);
+        for(RepoShip rp:ships){
+            if(rp.getName().equals(shName)) return rp;
+        }
+        return null;
+    }
 }

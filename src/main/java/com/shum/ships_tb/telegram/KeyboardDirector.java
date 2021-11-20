@@ -1,5 +1,7 @@
 package com.shum.ships_tb.telegram;
 
+import com.shum.ships_tb.ShipsBot;
+import com.shum.ships_tb.repository.entity.RepoButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.HashMap;
@@ -7,20 +9,32 @@ import java.util.List;
 import java.util.Map;
 
 public class KeyboardDirector {
-    private final Map<String, String> buttons= new HashMap();
-    //todo get buttons from db, put into map, and have some builder methods to build different keyboards
-    public KeyboardDirector(){
-        //this.buttons = buttons;//todo need method to receive data from db
+    private String commandForSelectShip = "/get_one_ship";
+    public final String regexPoint = ":";
 
-        //now its just manual added buttons data for testing
-        buttons.put("/show_my_ships", "show ships");
-        buttons.put("/return", "return");
-        buttons.put("/enter_name","enter name");
-        buttons.put("/create_new_ship","/create_new_ship");
-        buttons.put("/new_ship","/new_ship");
+    private final Map<String, String> buttons;
+    //todo get buttons from db, put into map, and have some builder methods to build different keyboards
+    public KeyboardDirector(ShipsBot shipsBot, String language){
+        this.buttons = buttonFromDb(shipsBot.getIbutton().findAll(), language);
 
     }
 
+    private Map<String,String> buttonFromDb(List<RepoButton>listButt, String language){
+        Map<String, String> buff = new HashMap<>();
+        switch (language){
+            case "ru":
+                for(RepoButton rb:listButt){
+                    buff.put(rb.getCommand(),rb.getRu());
+                }
+                break;
+            default:
+                for(RepoButton rb:listButt){
+                    buff.put(rb.getCommand(),rb.getEn());
+                }
+                break;
+        }
+        return buff;
+    }
 
 
     private InlineKeyboardMarkup productor(Map<String, String> buttonParam){
@@ -38,7 +52,7 @@ public class KeyboardDirector {
     }
 
     public InlineKeyboardMarkup productor(List<String> shipsNames){
-        Map<String, String> buttonParam = buttonsOfShips( shipsNames);
+        Map<String, String> buttonParam = buttonsOfShips(shipsNames);
         return productor(buttonParam);
     }
 
@@ -56,7 +70,9 @@ public class KeyboardDirector {
     private Map<String, String> buttonsOfShips(List<String> shipsNames){
         /**get list of ship names and return map of button of this ships*/
         Map<String, String > newMap = new HashMap<>();
-        //todo get list of ships name of current owner and make map where command be such us "/select_ship_by_name"
+        for(String sh_name:shipsNames){
+            newMap.put(String.format("%s%s%s",commandForSelectShip,regexPoint, sh_name), sh_name);
+        }
         return newMap;
     }
 
