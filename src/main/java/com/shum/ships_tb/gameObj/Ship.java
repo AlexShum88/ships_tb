@@ -56,4 +56,15 @@ public class Ship implements CanMove, CanHaveCargo, CanStringCargoTransformation
         rsh.setCargo_map(this.turnCargoIntoString(cargo, extraRegex, introRegex));
         return rsh;
     }
+
+    public String toString(){
+
+        return String.format("%s \nhull = %d\nfuel max = %d\nfuel current = %d\ncargo capacity = %d\ncargo = %s",
+                rsh.getName(),
+                rsh.getHull(),
+                rsh.getMaxFuel(),
+                rsh.getFuel(),
+                rsh.getCargoCapacity(),
+                rsh.getCargo_map());
+    }
 }

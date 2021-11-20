@@ -10,5 +10,8 @@ public interface IShip {
     List<RepoShip> findByOwner(String owner);
 
     RepoShip findById(Integer id, List<RepoShip> rp);
+
     void save (Ship ship);
+
+    RepoShip findByNameInOwner(String shName, String owner);
 }

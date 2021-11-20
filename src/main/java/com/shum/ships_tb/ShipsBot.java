@@ -6,11 +6,12 @@ import com.shum.ships_tb.gameObj.Ship;
 import com.shum.ships_tb.repository.entity.RepoCargo;
 import com.shum.ships_tb.repository.entity.RepoPort;
 import com.shum.ships_tb.service.BotService;
+import com.shum.ships_tb.service.button.Ibutton;
 import com.shum.ships_tb.service.cargo.ICargo;
 import com.shum.ships_tb.service.port.IPort;
 import com.shum.ships_tb.service.ship.IShip;
+import com.shum.ships_tb.service.shipType.IshipType;
 import com.shum.ships_tb.telegram.CommandListener;
-import com.shum.ships_tb.telegram.KeyboardDirector;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,11 @@ public class ShipsBot extends TelegramLongPollingBot {
     private IShip iShip;
     @Getter
     private final IPort iPort;
+    @Getter
+    private final Ibutton ibutton;
+    @Getter
+    private final IshipType ishipType;
+
 
     private final CommandListener commandListener;
     //collections need that no ask db every time we need this template
@@ -38,13 +44,15 @@ public class ShipsBot extends TelegramLongPollingBot {
     public static List<RepoPort> listRepoPort; // collections of ports
 
     @Autowired
-    public ShipsBot(BotService botService, ICargo icargo, IShip iShip, IPort iPort) {
+    public ShipsBot(BotService botService, ICargo icargo, IShip iShip, IPort iPort, Ibutton ibutton, IshipType ishipType) {
         this.botService = botService;
         this.icargo = icargo;
         this.iShip = iShip;
         this.iPort = iPort;
         listCargo = icargo.findAll();
         listRepoPort = iPort.findAll();
+        this.ibutton = ibutton;
+        this.ishipType = ishipType;
         this.commandListener = new CommandListener(this );
     }
 
@@ -65,7 +73,8 @@ public class ShipsBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasCallbackQuery()) {
             commandListener.getCallBackUpdate(update);
-        }else{ if (update.getMessage().getText().equals("/banana")) commandListener.setMessageListener(update.getMessage().getChatId().toString(),"");
+        }else{ if (update.getMessage().getText().equals("/banana"))
+            commandListener.setMessageListener(update.getMessage().getChatId().toString(),"");
                 commandListener.getMessageUpdate(update);
         }
 

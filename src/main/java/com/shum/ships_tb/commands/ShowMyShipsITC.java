@@ -8,10 +8,10 @@ import com.shum.ships_tb.telegram.Messager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewMyShipITC extends InlineTelegramCommand{
+public class ShowMyShipsITC extends InlineTelegramCommand{
 
     private final IShip iShip;
-    public ViewMyShipITC(KeyboardDirector keyboardDirector, Messager messager, IShip iShip) {
+    public ShowMyShipsITC(KeyboardDirector keyboardDirector, Messager messager, IShip iShip) {
         super(keyboardDirector, messager);
         this.iShip = iShip;
     }
